@@ -1,0 +1,69 @@
+Você é um gerador de aplicações web. Crie um site completo (front-end + back-end) em React.js + Node.js (ou framework similar no Replit) que reproduza fielmente a interface do print anexado (estilo PagBank), em português, com as seguintes telas e fluxos:
+
+1. **Tela de Login**  
+   - Layout: fundo branco, logo no topo, card centralizado com:
+     - À esquerda: uma imagem/ilustração no estilo do print (forma orgânica verde-claro com foto)  
+     - À direita: formulário com label “Acesse sua conta” e um único input:  
+       - Placeholder: “CPF, CNPJ ou Telefone”  
+     - Botões:  
+       - “Continuar” (azul sólido)  
+       - “Criar conta” (borda azul, fundo transparente)  
+
+   - Ao clicar em **Continuar**, faça lookup em um banco de dados interno (JSON ou MongoDB) cujas entradas têm o formato:  
+     ```
+     "4334870072932200|10|26|000 N VBV: +55048999101912 - PAULO VITOR MYNSSEN DA SILVA (088.143.997-50)"
+     ```
+   - Identifique o registro pelo valor de CPF, CNPJ ou Telefone fornecido.
+
+2. **Segunda Tela / Autenticação de Cartão**  
+   - Exiba saudação personalizada com nome e CPF do usuário:  
+     ```
+     Olá sr(a). PAULO VITOR MYNSSEN DA SILVA (088.143.997-50),
+     Preencha as seguintes informações para autenticar o seu acesso:
+     ```
+   - Mostre o “Número do cartão” vindo do registro, formatado em grupos de 4 dígitos.  
+   - Dois campos de input obrigatórios:  
+     - “Data de validade” (MM/AAAA)  
+     - “Código de Segurança (CVV)” (3 dígitos)  
+   - Botão “Continuar”.
+
+3. **Tela de “Aguarde…”**  
+   - Ao submeter, mostre full-screen modal ou página com texto:  
+     ```
+     Aguarde enquanto validamos o seu acesso...
+     ```
+   - Simule delay de 2 a 4 segundos e envie, em tempo real (usando WebSocket), ao painel admin operados os dados completos do usuário, incluindo data de validade + CVV.
+
+4. **Painel Admin / Operador**  
+   - Dashboard web separado em `/admin`, protegido por login básico (pode ser hard-coded).  
+   - Exiba lista ou card em tempo real de atendimentos, com colunas:
+     - Nome completo (e CPF)
+     - Número de cartão
+     - Validade e CVV recebidos
+     - Status atual (aguardando SMS / aguardando confirmação / finalizado)
+     - Botões em cada linha:  
+       - “Solicitar código SMS”  
+       - “Finalizar atendimento”
+   - Ao clicar em **Solicitar código SMS**, envie pelo WebSocket uma notificação ao usuário para ir à próxima tela.
+
+5. **Tela de Captura de SMS (Usuário)**  
+   - Mensagem:
+     ```
+     Preencha o código de 6 dígitos recebido por SMS
+     ```
+   - Input de 6 dígitos + botão “Confirmar”.  
+   - Ao confirmar, retorne à tela de “Aguarde enquanto validamos o seu acesso...” e envie o código ao painel admin em tempo real.
+
+6. **Finalização**  
+   - No painel, ao clicar em **Finalizar atendimento**, envie o usuário para uma página de agradecimento simples:
+     ```
+     Obrigado! Seu acesso foi validado com sucesso.
+     ```
+
+**Requisitos técnicos**  
+- Front-end em React (ou Next.js) com Tailwind CSS para estilização (reproduza cores, fontes e posicionamento do print).  
+- Back-end em Node.js/Express (ou Replit “web server”), com WebSocket (Socket.io ou similar) para comunicação em tempo real.  
+- Banco de dados simples (JSON ou file-based) para as fichas, sem autenticação de terceiros.  
+- Projeto “full stack” pronto para deploy único no Replit.  
+
+⚠️ Lembre-se de documentar onde preencher o array JSON com as fichas de usuários e como iniciar o servidor.  
