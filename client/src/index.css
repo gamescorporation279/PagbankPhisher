@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    
+    --primary: 202 100% 39%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 202 100% 39%;
+    
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    --accent: 92 45% 48%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 90%;
+    --input: 0 0% 85%;
+    --ring: 202 100% 39%;
+    
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 202 100% 39%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 60%;
+    
+    --accent: 92 45% 48%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 20%;
+    --input: 0 0% 25%;
+    --ring: 202 100% 39%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .pagbank-input {
+    @apply w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  .pagbank-button-primary {
+    @apply w-full bg-primary text-primary-foreground rounded py-3 font-medium hover:bg-primary/90 transition;
+  }
+
+  .pagbank-button-secondary {
+    @apply w-full border border-primary text-primary rounded py-3 font-medium hover:bg-secondary transition;
+  }
+
+  .pagbank-link {
+    @apply text-primary hover:underline;
+  }
+}
