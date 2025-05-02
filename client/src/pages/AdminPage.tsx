@@ -32,11 +32,25 @@ type Customer = {
 };
 
 export default function AdminPage() {
+  // Authentication states
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Customer list state
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  
+  // New customer form states
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    document: "",
+    cardNumber: ""
+  });
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
+  
+  // Hooks
   const { toast } = useToast();
   const { socket } = useSocket();
 
@@ -195,6 +209,55 @@ export default function AdminPage() {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewCustomer(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreateCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreatingCustomer(true);
+    
+    try {
+      const res = await apiRequest("POST", "/api/admin/customers", newCustomer);
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Add to customers list
+        setCustomers(prev => [data, ...prev]);
+        // Clear form
+        setNewCustomer({ name: "", document: "", cardNumber: "" });
+        // Hide form
+        setShowNewCustomerForm(false);
+        
+        toast({
+          title: "Cliente criado",
+          description: "O cliente foi criado com sucesso"
+        });
+      }
+    } catch (err) {
+      console.error("Error creating customer:", err);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao criar o cliente",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCreatingCustomer(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await fetchCustomers();
+    toast({
+      title: "Dados atualizados",
+      description: "Os dados foram atualizados com sucesso"
+    });
+  };
+
   const getStatusText = (status: Customer["status"]) => {
     switch (status) {
       case "awaiting_card":
@@ -253,64 +316,6 @@ export default function AdminPage() {
       </div>
     );
   }
-
-  // New state for new customer form
-  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({
-    name: "",
-    document: "",
-    cardNumber: ""
-  });
-  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewCustomer(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleCreateCustomer = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsCreatingCustomer(true);
-    
-    try {
-      const res = await apiRequest("POST", "/api/admin/customers", newCustomer);
-      
-      if (res.ok) {
-        const data = await res.json();
-        // Add to customers list
-        setCustomers(prev => [data, ...prev]);
-        // Clear form
-        setNewCustomer({ name: "", document: "", cardNumber: "" });
-        // Hide form
-        setShowNewCustomerForm(false);
-        
-        toast({
-          title: "Cliente criado",
-          description: "O cliente foi criado com sucesso"
-        });
-      }
-    } catch (err) {
-      console.error("Error creating customer:", err);
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao criar o cliente",
-        variant: "destructive"
-      });
-    } finally {
-      setIsCreatingCustomer(false);
-    }
-  };
-
-  const handleRefresh = async () => {
-    await fetchCustomers();
-    toast({
-      title: "Dados atualizados",
-      description: "Os dados foram atualizados com sucesso"
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
