@@ -18,6 +18,8 @@ import { db, pool } from "@db";
 import { storage } from "./storage";
 import { eq } from "drizzle-orm";
 import { customers, admins } from "@shared/schema";
+import { formatDocument, formatCardNumber } from "../client/src/lib/utils";
+import { randomUUID } from "crypto";
 
 // Define WebSocket message types
 type WSMessage = {
@@ -404,6 +406,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(200).json(customerList);
     } catch (error) {
       console.error('Error fetching customers:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  // Create new customer
+  app.post('/api/admin/customers', async (req, res) => {
+    try {
+      if (!req.session.adminId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      
+      const { name, document, cardNumber } = req.body;
+      
+      if (!name || !document || !cardNumber) {
+        return res.status(400).json({ message: 'Name, document, and card number are required' });
+      }
+      
+      // Check if customer with document already exists
+      const existingCustomer = await db.query.customers.findFirst({
+        where: eq(customers.document, document)
+      });
+      
+      if (existingCustomer) {
+        return res.status(400).json({ message: 'Customer with this document already exists' });
+      }
+      
+      // Format document and card number
+      const formattedDocument = document.replace(/[^0-9]/g, '');
+      
+      // Create new customer
+      const [newCustomer] = await db.insert(customers).values({
+        id: randomUUID(),
+        name,
+        document: formattedDocument,
+        formattedDocument: formatDocument(formattedDocument),
+        cardNumber,
+        maskedCardNumber: formatCardNumber(cardNumber),
+        status: 'awaiting_card'
+      }).returning();
+      
+      return res.status(201).json(newCustomer);
+    } catch (error) {
+      console.error('Error creating customer:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   });

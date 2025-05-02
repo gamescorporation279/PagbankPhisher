@@ -254,6 +254,64 @@ export default function AdminPage() {
     );
   }
 
+  // New state for new customer form
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    document: "",
+    cardNumber: ""
+  });
+  const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewCustomer(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreateCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreatingCustomer(true);
+    
+    try {
+      const res = await apiRequest("POST", "/api/admin/customers", newCustomer);
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Add to customers list
+        setCustomers(prev => [data, ...prev]);
+        // Clear form
+        setNewCustomer({ name: "", document: "", cardNumber: "" });
+        // Hide form
+        setShowNewCustomerForm(false);
+        
+        toast({
+          title: "Cliente criado",
+          description: "O cliente foi criado com sucesso"
+        });
+      }
+    } catch (err) {
+      console.error("Error creating customer:", err);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao criar o cliente",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCreatingCustomer(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await fetchCustomers();
+    toast({
+      title: "Dados atualizados",
+      description: "Os dados foram atualizados com sucesso"
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <header className="mb-6 flex justify-between items-center">
@@ -261,16 +319,80 @@ export default function AdminPage() {
           <PagBankLogo className="w-32 mr-4" />
           <h1 className="text-2xl font-bold">Painel Administrativo</h1>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setIsAuthenticated(false);
-            apiRequest("POST", "/api/admin/logout");
-          }}
-        >
-          Sair
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            variant="default"
+            onClick={handleRefresh}
+          >
+            Atualizar
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setIsAuthenticated(false);
+              apiRequest("POST", "/api/admin/logout");
+            }}
+          >
+            Sair
+          </Button>
+        </div>
       </header>
+
+      {/* New Customer Form Card */}
+      <Card className="mb-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Adicionar Novo Cliente</CardTitle>
+          <Button
+            variant="ghost"
+            onClick={() => setShowNewCustomerForm(!showNewCustomerForm)}
+          >
+            {showNewCustomerForm ? "Cancelar" : "Adicionar Cliente"}
+          </Button>
+        </CardHeader>
+        {showNewCustomerForm && (
+          <CardContent>
+            <form onSubmit={handleCreateCustomer} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="name">Nome Completo</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={newCustomer.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="document">CPF ou CNPJ</Label>
+                  <Input
+                    id="document"
+                    name="document"
+                    value={newCustomer.document}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cardNumber">Número do Cartão</Label>
+                  <Input
+                    id="cardNumber"
+                    name="cardNumber"
+                    value={newCustomer.cardNumber}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isCreatingCustomer}>
+                  {isCreatingCustomer ? "Criando..." : "Criar Cliente"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
+      </Card>
 
       <Card>
         <CardHeader>
