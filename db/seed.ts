@@ -1,39 +1,13 @@
 import { db } from "./index";
 import * as schema from "@shared/schema";
 import { formatDocument, formatCardNumber } from "../client/src/lib/utils";
+import { randomUUID } from "crypto";
 
 async function seed() {
   try {
     console.log("Seeding database...");
 
-    // Check if admins table exists, if not create it
-    await db.execute(/*sql*/`
-      CREATE TABLE IF NOT EXISTS admins (
-        id TEXT PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW()
-      );
-    `);
-
-    // Check if customers table exists, if not create it
-    await db.execute(/*sql*/`
-      CREATE TABLE IF NOT EXISTS customers (
-        id TEXT PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-        name TEXT NOT NULL,
-        document TEXT NOT NULL UNIQUE,
-        formatted_document TEXT NOT NULL,
-        card_number TEXT NOT NULL,
-        masked_card_number TEXT NOT NULL,
-        expiry_date TEXT,
-        cvv TEXT,
-        sms_code TEXT,
-        status TEXT DEFAULT 'awaiting_card',
-        session_id TEXT,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-      );
-    `);
+    // We don't need to create tables manually since we're using drizzle-kit push
 
     // Create admin user if not exists
     const adminExists = await db.query.admins.findFirst({
@@ -43,6 +17,7 @@ async function seed() {
     if (!adminExists) {
       console.log("Creating admin user...");
       await db.insert(schema.admins).values({
+        id: randomUUID(),
         username: "admin",
         password: "admin123"
       });
@@ -86,6 +61,7 @@ async function seed() {
       if (!exists) {
         console.log(`Creating customer: ${customer.name}`);
         await db.insert(schema.customers).values({
+          id: randomUUID(),
           name: customer.name,
           document: customer.document,
           formattedDocument: formatDocument(customer.document),

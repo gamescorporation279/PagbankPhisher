@@ -1,4 +1,15 @@
 import type { Express } from "express";
+import { SessionData } from "express-session";
+
+// Extend SessionData interface to add our custom properties
+declare module "express-session" {
+  interface SessionData {
+    customerId?: string;
+    document?: string;
+    adminId?: string;
+    adminUsername?: string;
+  }
+}
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import session from "express-session";
