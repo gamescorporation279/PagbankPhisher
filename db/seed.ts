@@ -1,3 +1,5 @@
+import 'dotenv/config'
+import { seedCustomers } from './someSeedFile'
 import { db } from "./index";
 import * as schema from "@shared/schema";
 import { formatDocument, formatCardNumber } from "../client/src/lib/utils";
